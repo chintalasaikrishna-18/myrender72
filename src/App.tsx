@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
-import { Link, Route, Routes, useParams } from 'react-router-dom'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { projects, projectTitle, type Project } from './data/projects'
 
 const socials = [
@@ -13,8 +12,8 @@ function SiteChrome({ back }: { back?: boolean }) {
   return <>
     <header className="masthead">
       <div className="masthead-inner">
-        {back ? <Link to="/" className="back-button">Back</Link> : <div className="back-spacer" />}
-        <Link to="/" className="wordmark" aria-label="It's Meech's Time">IT'S MEECH'S<br />TIME</Link>
+        {back ? <a href="/" className="back-button">Back</a> : <div className="back-spacer" />}
+        <a href="/" className="wordmark" aria-label="It's Meech's Time">IT'S MEECH'S<br />TIME</a>
         <nav className="socials" aria-label="Social links">{socials.map(([name, href]) => <a href={href} key={name}>{name}</a>)}</nav>
       </div>
     </header>
@@ -23,11 +22,8 @@ function SiteChrome({ back }: { back?: boolean }) {
 }
 
 function App() {
-  return <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/:kind/:slug" element={<ProjectPage />} />
-    <Route path="*" element={<Home />} />
-  </Routes>
+  const [kind, slug] = window.location.pathname.split('/').filter(Boolean)
+  return kind && slug ? <ProjectPage kind={kind} slug={slug} /> : <Home />
 }
 
 function Home() {
@@ -49,15 +45,15 @@ function Home() {
           <div className="scene-logo" style={{ opacity: Math.max(0, 1 - progress * 2.1) }}><b>213</b><span>MEECH</span></div>
           <p className="scene-callout" style={{ opacity: Math.max(0, 1 - progress * 2.4) }}>Scroll to view</p>
           <div className="orbit-menu" style={{ opacity: Math.min(1, Math.max(0, (progress - .1) * 4)) }}>
-            <span>FASHION</span><span>BEAUTY</span><span>BRANDS</span><span>ARTIST</span><span>MAGAZINE</span>
-            <span>PHOTO</span><span>VIDEO</span><span>HOME</span><span>ABOUT</span><span>BOOK</span>
+            <span>WORKSHOPS</span><span>CULTURE</span><span>CLUBS</span><span>TECH</span><span>FESTS</span>
+            <span>EVENTS</span><span>CALENDAR</span><span>CAMPUS</span><span>SOCIETIES</span><span>RSVP</span>
           </div>
           {featured.map((project, index) => <SceneProject key={`${project.kind}-${project.slug}-${index}`} project={project} index={index} progress={progress} />)}
           <div className="scene-hint" style={{ opacity: Math.min(1, Math.max(0, progress * 3 - 1.25)) }}>SELECTED WORK<br /><i>↓</i></div>
         </div>
       </section>
       <section className="work-index" id="work">
-        <div className="index-intro"><p>Photography + Film</p><h1>Selected work</h1><span>Scroll to explore</span></div>
+        <div className="index-intro"><p>Campus events</p><h1>What’s on</h1><span>Scroll to explore</span></div>
         <div className="work-grid">{projects.map((project, index) => <ProjectCard project={project} index={index} key={`${project.kind}-${project.slug}-${index}`} />)}</div>
       </section>
     </main>
@@ -76,27 +72,26 @@ function SceneProject({ project, index, progress }: { project: Project; index: n
   const scale = .72 + (index % 3) * .12 + progress * .18
   const opacity = progress < .88 ? 1 : Math.max(0, 1 - (progress - .88) * 8)
   const style: CSSProperties = { left: `${baseX}%`, top: `${baseY}%`, transform: `translate(-50%, -50%) translate(${travelX}px, ${travelY}px) rotate(${rotation}deg) scale(${scale})`, opacity, zIndex: 5 + index }
-  return <Link to={`/${project.kind}/${project.slug}`} className="scene-project" style={style} aria-label={`View ${projectTitle(project)}`}><img src={project.image} alt="" /></Link>
+  return <a href={`/${project.kind}/${project.slug}`} className="scene-project" style={style} aria-label={`View ${projectTitle(project)}`}><img src={project.image} alt="" loading={index < 5 ? 'eager' : 'lazy'} decoding="async" fetchPriority={index < 5 ? 'high' : 'auto'} /></a>
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
-  return <Link className={`work-card work-card-${index % 5}`} to={`/${project.kind}/${project.slug}`}>
+  return <a className={`work-card work-card-${index % 5}`} href={`/${project.kind}/${project.slug}`}>
     <span className="work-number">{String(index + 1).padStart(2, '0')}</span>
-    <div className="work-image"><img src={project.image} alt="" loading="lazy" /></div>
+    <div className="work-image"><img src={project.image} alt="" loading="lazy" decoding="async" /></div>
     <h2>{project.top}<br />{project.bottom}</h2>
-    <span className="work-kind">{project.kind}</span>
-  </Link>
+    <span className="work-kind">{project.category}</span>
+  </a>
 }
 
-function ProjectPage() {
-  const { kind, slug } = useParams()
-  const project = useMemo(() => projects.find((item) => item.slug === slug && item.kind === kind) ?? projects[0], [kind, slug])
+function ProjectPage({ kind, slug }: { kind: string; slug: string }) {
+  const project = projects.find((item) => item.slug === slug && item.kind === kind) ?? projects[0]
   const index = projects.indexOf(project)
   const previous = projects[(index - 1 + projects.length) % projects.length]
   const next = projects[(index + 1) % projects.length]
 
   useEffect(() => {
-    document.title = `${projectTitle(project)} — Meech213`
+    document.title = `${projectTitle(project)} — Campus Events`
     window.scrollTo(0, 0)
   }, [project])
 
@@ -106,17 +101,19 @@ function ProjectPage() {
       <section className="project-hero">
         <div className="project-title"><h1>{project.top}<br />{project.bottom}</h1><p>Scroll to view</p></div>
         <div className="hero-count"><span>{String(index + 1).padStart(2, '0')}</span><i /> <span>{String(projects.length).padStart(2, '0')}</span></div>
-        <img className="hero-project-image" src={project.image} alt="" />
+        <img className="hero-project-image" src={project.image} alt="" fetchPriority="high" decoding="async" />
       </section>
-      <section className="project-gallery" aria-label={`${projectTitle(project)}, ${project.kind === 'photo' ? 'photographs' : 'film stills'}`}>
-        <p className="gallery-caption">Showing {String(index + 1).padStart(2, '0')} of {String(projects.length).padStart(2, '0')}</p>
-        {Array.from({ length: 8 }).map((_, imageIndex) => <figure className={`gallery-frame gallery-frame-${imageIndex % 5}`} key={imageIndex}>
-          {project.kind === 'video' && imageIndex === 2 && project.video ? <video src={project.video} poster={project.image} autoPlay muted loop playsInline /> : <img src={project.image} alt={`${projectTitle(project)}, image ${imageIndex + 1}`} loading={imageIndex > 1 ? 'lazy' : 'eager'} />}
-        </figure>)}
+      <section className="event-content" aria-label={`${projectTitle(project)} event details`}>
+        <p className="gallery-caption">Campus event · {project.category}</p>
+        <article>
+          <div className="event-copy"><h2>What it’s about</h2><p>{project.summary}</p><p>{projectTitle(project)} is designed as a welcoming college event: bring a curious mind, meet students outside your usual circle and leave with a new idea or collaborator.</p></div>
+          <dl className="event-facts"><div><dt>Format</dt><dd>{project.category} event</dd></div><div><dt>For</dt><dd>All college students</dd></div><div><dt>Bring</dt><dd>Your campus ID and curiosity</dd></div></dl>
+        </article>
+        <div className="event-flow"><span>01 · Arrive</span><span>02 · Take part</span><span>03 · Share the moment</span></div>
       </section>
       <nav className="project-switcher" aria-label="Project navigation">
-        <Link to={`/${previous.kind}/${previous.slug}`}><small>Previous project</small><span>Prev</span><b>{projectTitle(previous)}</b></Link>
-        <Link to={`/${next.kind}/${next.slug}`}><small>Next project</small><span>Next</span><b>{projectTitle(next)}</b></Link>
+        <a href={`/${previous.kind}/${previous.slug}`}><small>Previous project</small><span>Prev</span><b>{projectTitle(previous)}</b></a>
+        <a href={`/${next.kind}/${next.slug}`}><small>Next project</small><span>Next</span><b>{projectTitle(next)}</b></a>
       </nav>
     </main>
   </div>

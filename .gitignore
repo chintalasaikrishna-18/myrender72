@@ -4,3 +4,7 @@ dist
 *.local
 
 .vercel
+lighthouse*.json
+lighthouse*.log
+optimized-vite*.log
+public/events/*.jpg
