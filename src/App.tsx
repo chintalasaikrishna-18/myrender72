@@ -72,7 +72,8 @@ function SceneProject({ project, index, progress }: { project: Project; index: n
   const scale = .72 + (index % 3) * .12 + progress * .18
   const opacity = progress < .88 ? 1 : Math.max(0, 1 - (progress - .88) * 8)
   const style: CSSProperties = { left: `${baseX}%`, top: `${baseY}%`, transform: `translate(-50%, -50%) translate(${travelX}px, ${travelY}px) rotate(${rotation}deg) scale(${scale})`, opacity, zIndex: 5 + index }
-  return <a href={`/${project.kind}/${project.slug}`} className="scene-project" style={style} aria-label={`View ${projectTitle(project)}`}><img src={project.image} alt="" loading={index < 5 ? 'eager' : 'lazy'} decoding="async" fetchPriority={index < 5 ? 'high' : 'auto'} /></a>
+  const imageReady = progress > .02 || index < 4
+  return <a href={`/${project.kind}/${project.slug}`} className="scene-project" style={style} aria-label={`View ${projectTitle(project)}`}><img src={imageReady ? project.image : undefined} alt="" loading={index < 5 ? 'eager' : 'lazy'} decoding="async" fetchPriority={index < 5 ? 'high' : 'auto'} /></a>
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
