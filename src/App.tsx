@@ -13,7 +13,7 @@ function SiteChrome({ back }: { back?: boolean }) {
     <header className="masthead">
       <div className="masthead-inner">
         {back ? <a href="/" className="back-button">Back</a> : <div className="back-spacer" />}
-        <a href="/" className="wordmark" aria-label="It's Meech's Time">IT'S MEECH'S<br />TIME</a>
+        <a href="/" className="wordmark" aria-label="University Site 113">UNIVERSITY<br />SITE 113</a>
         <nav className="socials" aria-label="Social links">{socials.map(([name, href]) => <a href={href} key={name}>{name}</a>)}</nav>
       </div>
     </header>
@@ -42,14 +42,16 @@ function Home() {
       <section className="scene-scroll" aria-label="Selected visual work">
         <div className="scene">
           <div className="scene-wash" style={{ opacity: Math.max(0, .7 - progress) }} />
-          <div className="scene-logo" style={{ opacity: Math.max(0, 1 - progress * 2.1) }}><b>213</b><span>MEECH</span></div>
+          <div className="scene-logo" style={{ opacity: Math.max(0, 1 - progress * 2.1) }}><b>113</b><span>UNIVERSITY</span></div>
           <p className="scene-callout" style={{ opacity: Math.max(0, 1 - progress * 2.4) }}>Scroll to view</p>
-          <div className="orbit-menu" style={{ opacity: Math.min(1, Math.max(0, (progress - .1) * 4)) }}>
-            <span>WORKSHOPS</span><span>CULTURE</span><span>CLUBS</span><span>TECH</span><span>FESTS</span>
-            <span>EVENTS</span><span>CALENDAR</span><span>CAMPUS</span><span>SOCIETIES</span><span>RSVP</span>
+          <div className="orbit-menu">
+            <div className="orbit-menu-items" style={{ opacity: Math.min(1, Math.max(0, (progress - .1) * 4)) }}>
+              <span>WORKSHOPS</span><span>CULTURE</span><span>CLUBS</span><span>TECH</span><span>FESTS</span>
+              <span>EVENTS<span className="orbit-events-arrow" aria-hidden="true">↗</span></span><span>CALENDAR</span><span>CAMPUS</span><span>SOCIETIES</span><span>RSVP</span>
+            </div>
+            <div className="scene-hint" style={{ opacity: Math.min(1, Math.max(0, progress * 3 - 1.25)) }}><span>SELECTED WORK</span></div>
           </div>
           {featured.map((project, index) => <SceneProject key={`${project.kind}-${project.slug}-${index}`} project={project} index={index} progress={progress} />)}
-          <div className="scene-hint" style={{ opacity: Math.min(1, Math.max(0, progress * 3 - 1.25)) }}><span>SELECTED WORK</span><i aria-hidden="true">↓</i></div>
         </div>
       </section>
       <section className="work-index" id="work">
