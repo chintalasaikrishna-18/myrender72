@@ -17,7 +17,7 @@ function SiteChrome({ back }: { back?: boolean }) {
         <nav className="socials" aria-label="Social links">{socials.map(([name, href]) => <a href={href} key={name}>{name}</a>)}</nav>
       </div>
     </header>
-    <footer className="page-footer"><span>© All rights reserved. 2026</span><span className="footer-credit">Site by <a href="https://www.theblackpepperstudio.com/">TBP</a></span></footer>
+    <footer className="page-footer"><span>© All rights reserved. 2026</span><span className="footer-credit">Site by <strong>SAI KRISHNA</strong></span></footer>
   </>
 }
 
@@ -49,7 +49,7 @@ function Home() {
             <span>EVENTS</span><span>CALENDAR</span><span>CAMPUS</span><span>SOCIETIES</span><span>RSVP</span>
           </div>
           {featured.map((project, index) => <SceneProject key={`${project.kind}-${project.slug}-${index}`} project={project} index={index} progress={progress} />)}
-          <div className="scene-hint" style={{ opacity: Math.min(1, Math.max(0, progress * 3 - 1.25)) }}>SELECTED WORK<br /><i>↓</i></div>
+          <div className="scene-hint" style={{ opacity: Math.min(1, Math.max(0, progress * 3 - 1.25)) }}><span>SELECTED WORK</span><i aria-hidden="true">↓</i></div>
         </div>
       </section>
       <section className="work-index" id="work">
@@ -72,8 +72,7 @@ function SceneProject({ project, index, progress }: { project: Project; index: n
   const scale = .72 + (index % 3) * .12 + progress * .18
   const opacity = progress < .88 ? 1 : Math.max(0, 1 - (progress - .88) * 8)
   const style: CSSProperties = { left: `${baseX}%`, top: `${baseY}%`, transform: `translate(-50%, -50%) translate(${travelX}px, ${travelY}px) rotate(${rotation}deg) scale(${scale})`, opacity, zIndex: 5 + index }
-  const imageReady = progress > .02 || index < 4
-  return <a href={`/${project.kind}/${project.slug}`} className="scene-project" style={style} aria-label={`View ${projectTitle(project)}`}><img src={imageReady ? project.image : undefined} alt="" loading={index < 5 ? 'eager' : 'lazy'} decoding="async" fetchPriority={index < 5 ? 'high' : 'auto'} /></a>
+  return <a href={`/${project.kind}/${project.slug}`} className="scene-project" style={style} aria-label={`View ${projectTitle(project)}`}><img src={project.image} alt="" loading={index < 5 ? 'eager' : 'lazy'} decoding="async" fetchPriority={index < 5 ? 'high' : 'auto'} /></a>
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
